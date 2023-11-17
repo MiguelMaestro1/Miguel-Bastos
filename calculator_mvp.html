@@ -1,0 +1,79 @@
+<html>
+    <body>
+        <h1>Wil je optellen of aftrekken?</h1>
+        <button onclick="optellen()">Optellen</button>
+        <button onclick="aftrekken()">Aftrekken</button>
+        <button onclick="vermenigvuldigen()">Vermenigvuldigen</button>
+        <button onclick="delen()">Delen</button>
+        <script>
+
+            function optellen() {
+                let getal1tekst = prompt("Voer het eerste getal in.")
+
+                var getal1 = parseInt(getal1tekst) 
+
+                let getal2tekst = prompt("Voer een tweede getal in.")
+
+                var getal2 = parseInt(getal2tekst)
+
+                let resultaat = getal1 + getal2
+                if (isNaN(getal1) || isNaN(getal2)) {
+                    alert("Error, een of beide getallen zijn geen cijfers.")
+                } else {
+                    alert(getal1 + "+" + getal2 + "=" + resultaat)
+                }
+            }
+
+             function aftrekken() {
+                let getal1tekst = prompt("Voer het eerste getal in.")
+
+                var getal1 = parseInt(getal1tekst) 
+
+                let getal2tekst = prompt("Voer een tweede getal in.")
+
+                var getal2 = parseInt(getal2tekst)
+
+                let resultaat = getal1 - getal2
+                if (isNaN(getal1) || isNaN(getal2)) {
+                    alert("Error, een of beide getallen zijn geen cijfers.")
+                } else {
+                    alert(getal1 + "-" + getal2 + "=" + resultaat)
+                }
+            }
+
+            function vermenigvuldigen() {
+                let getal1tekst = prompt("Voer het eerste getal in.")
+
+                var getal1 = parseInt(getal1tekst) 
+
+                let getal2tekst = prompt("Voer een tweede getal in.")
+
+                var getal2 = parseInt(getal2tekst)
+
+                let resultaat = getal1 * getal2
+                if (isNaN(getal1) || isNaN(getal2)) {
+                    alert("Error, een of beide getallen zijn geen cijfers.")
+                } else {
+                    alert(getal1 + "*" + getal2 + "=" + resultaat)
+                }
+            }
+
+            function delen() {
+                let getal1tekst = prompt("Voer het eerste getal in.")
+
+                var getal1 = parseInt(getal1tekst) 
+
+                let getal2tekst = prompt("Voer een tweede getal in.")
+
+                var getal2 = parseInt(getal2tekst)
+
+                let resultaat = getal1 / getal2
+                if (isNaN(getal1) || isNaN(getal2)) {
+                    alert("Error, een of beide getallen zijn geen cijfers.")
+                } else {
+                    alert(getal1 + "/" + getal2 + "=" + resultaat)
+                }
+            }
+        </script>
+    </body>
+</html>
