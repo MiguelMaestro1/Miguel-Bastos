@@ -1,4 +1,4 @@
-var rij = 0;
+kleur='white';
 
 function setup() {
   canvas = createCanvas(451,451);
@@ -7,9 +7,12 @@ function setup() {
 }
 
 function draw() {
-  for (var rij = 0; rij < 450;rij += 50)
+  for (var rij = 0;rij < 450;rij += 50) {
     for (var kolom = 0;kolom < 450;kolom += 50) {
-      fill(kleur)
+      if (kolom === 300 && rij === 150)
+      fill(kleur);
       rect(kolom,rij,50,50);
     }
+  }
+  
 }
