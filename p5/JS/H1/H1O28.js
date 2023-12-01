@@ -1,4 +1,4 @@
-var aantal = 15;
+var aantal = 5;
 
 function setup() {
   canvas = createCanvas(450,450);
