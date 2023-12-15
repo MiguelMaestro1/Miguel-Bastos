@@ -14,5 +14,14 @@ function setup() {
 
 function draw() {
   background('white');
+  for(var n = 1; n <= aantal;n++) {
+    tekenCircel(x,y,diameter)
+
+    x = random(50,400)
+    y = random(50,400)
+    diameter = random(25,75)
+  }
 
 }
+function tekenCirkel (x,y,diameter)
+circle(x,y,diameter)
