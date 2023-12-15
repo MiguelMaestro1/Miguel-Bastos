@@ -13,7 +13,7 @@ function setup() {
 function draw() {
   background('lavender');
   fill('black');
-  text("aantal = " + aantal,10,20);    
+  text("aantal = " + aantal,100,200);    
   translate(100,100);
   fill(178, 34, 34,0.7);
   for (var x = 0;x < 6;x++) {
