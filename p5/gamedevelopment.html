@@ -22,10 +22,12 @@
       // Initial game state
       let ball = { x: canvas.width / 2, y: canvas.height / 2, radius: 10, speedX: 5, speedY: 5 };
       let leftPaddle = { x: 0, y: canvas.height / 2 - 30, width: 10, height: 60, speed: 5 };
-      let rightPaddle = { x: canvas.width - 10, y: canvas.height / 2 - 30, width: 10, height: 60, speed: 5 }; // Adjusted the right paddle speed
+      let rightPaddle = { x: canvas.width - 10, y: canvas.height / 2 - 30, width: 10, height: 60, speed: 0 };
       let score = { player1: 0, player2: 0 };
       let isGameRunning = false;
-      let scoreLimit = 5; // Set the winning score limit
+      let scoreLimit = 5;
+      let difficulty = 'Medium'; // Default difficulty level
+      let ballSpeedMultiplier = 1; // Multiplier for ball speed based on difficulty
 
       function draw() {
         // Clear canvas
@@ -53,23 +55,26 @@
         ctx.fillText(`${score.player1} - ${score.player2}`, canvas.width / 2 - 50, 30);
 
         if (!isGameRunning) {
-          // Draw start screen
+          // Draw start screen or game over screen
           ctx.font = '40px Arial';
-          ctx.fillText('Press Space to Start', canvas.width / 2 - 200, canvas.height / 2);
-        }
-
-        // Draw scoreboard if the game is over
-        if (score.player1 === scoreLimit || score.player2 === scoreLimit) {
-          ctx.font = '40px Arial';
-          ctx.fillText(`Player ${score.player1 === scoreLimit ? '1' : '2'} Wins!`, canvas.width / 2 - 150, canvas.height / 2 + 50);
-          ctx.fillText('Press Space to Play Again', canvas.width / 2 - 250, canvas.height / 2 + 100);
+          if (score.player1 === scoreLimit || score.player2 === scoreLimit) {
+            ctx.fillText(`Player ${score.player1 === scoreLimit ? '1' : '2'} Wins!`, canvas.width / 2 - 150, canvas.height / 2 + 50);
+            ctx.fillText('Press Space to Play Again', canvas.width / 2 - 250, canvas.height / 2 + 100);
+          } else {
+            ctx.fillText('Select Difficulty:', canvas.width / 2 - 150, canvas.height / 2 - 50);
+            ctx.fillText('1. Easy', canvas.width / 2 - 100, canvas.height / 2);
+            ctx.fillText('2. Medium', canvas.width / 2 - 100, canvas.height / 2 + 50);
+            ctx.fillText('3. Hard', canvas.width / 2 - 100, canvas.height / 2 + 100);
+            ctx.fillText(`Difficulty: ${difficulty}`, canvas.width / 2 - 150, canvas.height / 2 + 150);
+            ctx.fillText('Press Space to Start', canvas.width / 2 - 200, canvas.height / 2 + 200);
+          }
         }
       }
 
       function update() {
         if (isGameRunning && score.player1 < scoreLimit && score.player2 < scoreLimit) {
           // Move paddles
-          leftPaddle.y += (ball.y - (leftPaddle.y + leftPaddle.height / 2)) * 0.1;
+          leftPaddle.y += (ball.y - (leftPaddle.y + leftPaddle.height / 2)) * (leftPaddle.speed / 100);
           rightPaddle.y += rightPaddle.speed;
 
           // Ensure paddles stay within the playing area
@@ -77,8 +82,8 @@
           rightPaddle.y = Math.max(0, Math.min(rightPaddle.y, canvas.height - rightPaddle.height));
 
           // Ball movement
-          ball.x += ball.speedX;
-          ball.y += ball.speedY;
+          ball.x += ball.speedX * ballSpeedMultiplier;
+          ball.y += ball.speedY * ballSpeedMultiplier;
 
           // Ball collisions with walls
           if (ball.y - ball.radius < 0 || ball.y + ball.radius > canvas.height) {
@@ -113,6 +118,7 @@
       function checkWinner() {
         if (score.player1 === scoreLimit || score.player2 === scoreLimit) {
           isGameRunning = false;
+          rightPaddle.speed = 0; // Make right paddle stay still
         }
       }
 
@@ -129,33 +135,57 @@
             // Reset the game if it's over
             score.player1 = 0;
             score.player2 = 0;
+            rightPaddle.speed = 0; // Make right paddle stay still on game restart
           }
           isGameRunning = true;
-        }
-
-        // Player controls for the right paddle
-        if (e.code === 'KeyW' && rightPaddle.y > 0) {
-          rightPaddle.speed = -rightPaddle.speed;
-        } else if (e.code === 'KeyS' && rightPaddle.y + rightPaddle.height < canvas.height) {
-          rightPaddle.speed = -rightPaddle.speed;
+          setDifficulty();
         }
       }
 
       function keyUpHandler(e) {
         // Player controls for the right paddle
-        if (e.code === 'KeyW' || e.code === 'KeyS') {
-          rightPaddle.speed = 5; // Adjust the speed as needed
+        if (e.code === 'KeyW') {
+          rightPaddle.speed = -5;
+        }
+        if (e.code === 'KeyS') {
+            rightPaddle.speed = 5
         }
       }
 
-      document.addEventListener('keydown', keyDownHandler, false);
-      document.addEventListener('keyup', keyUpHandler, false);
+      function setDifficulty() {
+        // Set difficulty level based on user input
+        if (difficulty === 'Easy') {
+          ballSpeedMultiplier = 0.7;
+          leftPaddle.speed = 0.8;
+        } else if (difficulty === 'Medium') {
+          ballSpeedMultiplier = 1;
+          leftPaddle.speed = 1
+        } else if (difficulty === 'Hard') {
+          ballSpeedMultiplier = 1.2;
+          leftPaddle.speed = 1.5;
+        }
+      }
 
       function gameLoop() {
         draw();
         update();
         requestAnimationFrame(gameLoop);
       }
+
+      function difficultySelection(e) {
+        // Set difficulty level based on user input
+        if (e.code === 'Digit1') {
+          difficulty = 'Easy';
+        } else if (e.code === 'Digit2') {
+          difficulty = 'Medium';
+        } else if (e.code === 'Digit3') {
+          difficulty = 'Hard';
+        }
+      }
+
+      document.addEventListener('keydown', difficultySelection, false);
+      document.addEventListener('keydown', keyDownHandler, false);
+      document.addEventListener('keyup', keyUpHandler, false);
 
       gameLoop();
     });
