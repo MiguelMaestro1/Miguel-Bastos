@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    canvas {
+      display: block;
+      margin: auto;
+      background-color: #000;
+    }
+  </style>
+  <title>Pong Game</title>
+</head>
+<body>
+  <canvas id="pongCanvas" width="800" height="400"></canvas>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const canvas = document.getElementById('pongCanvas');
+      const ctx = canvas.getContext('2d');
+
+      // Initial game state
+      let ball = { x: canvas.width / 2, y: canvas.height / 2, radius: 10, speedX: 5, speedY: 5 };
+      let paddle = { width: 10, height: 60, speed: 8, y: canvas.height / 2 - 30 };
+      let leftPaddle = { x: 0, y: canvas.height / 2 - 30, width: 10, height: 60, speed: 8 };
+      let rightPaddle = { x: canvas.width - 10, y: canvas.height / 2 - 30, width: 10, height: 60, speed: 8 };
+      let score = { player1: 0, player2: 0 };
+      let isGameRunning = false;
+      let scoreLimit = 5; // Set the winning score limit
+
+      function draw() {
+        // Clear canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Draw paddles and ball
+        ctx.fillStyle = '#fff';
+        ctx.fillRect(leftPaddle.x, leftPaddle.y, leftPaddle.width, leftPaddle.height);
+        ctx.fillRect(rightPaddle.x, rightPaddle.y, rightPaddle.width, rightPaddle.height);
+        ctx.beginPath();
+        ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Draw center line
+        ctx.setLineDash([5, 5]);
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 2;
+        ctx.moveTo(canvas.width / 2, 0);
+        ctx.lineTo(canvas.width / 2, canvas.height);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Draw scores
+        ctx.font = '30px Arial';
+        ctx.fillText(`${score.player1} - ${score.player2}`, canvas.width / 2 - 50, 30);
+
+        if (!isGameRunning) {
+          // Draw start screen
+          ctx.font = '40px Arial';
+          ctx.fillText('Press Space to Start', canvas.width / 2 - 200, canvas.height / 2);
+        }
+
+        // Draw scoreboard if the game is over
+        if (score.player1 === scoreLimit || score.player2 === scoreLimit) {
+          ctx.font = '40px Arial';
+          ctx.fillText(`Player ${score.player1 === scoreLimit ? '1' : '2'} Wins!`, canvas.width / 2 - 150, canvas.height / 2 + 50);
+          ctx.fillText('Press Space to Play Again', canvas.width / 2 - 250, canvas.height / 2 + 100);
+        }
+      }
+
+      function update() {
+        if (isGameRunning && score.player1 < scoreLimit && score.player2 < scoreLimit) {
+          // Move paddles
+          leftPaddle.y += leftPaddle.speed;
+          rightPaddle.y += rightPaddle.speed;
+
+          // Ball movement
+          ball.x += ball.speedX;
+          ball.y += ball.speedY;
+
+          // Ball collisions with walls
+          if (ball.y - ball.radius < 0 || ball.y + ball.radius > canvas.height) {
+            ball.speedY = -ball.speedY;
+          }
+
+          // Ball collisions with paddles
+          if (
+            (ball.x - ball.radius < leftPaddle.x + leftPaddle.width &&
+              ball.y > leftPaddle.y &&
+              ball.y < leftPaddle.y + leftPaddle.height) ||
+            (ball.x + ball.radius > rightPaddle.x &&
+              ball.y > rightPaddle.y &&
+              ball.y < rightPaddle.y + rightPaddle.height)
+          ) {
+            ball.speedX = -ball.speedX;
+          }
+
+          // Ball out of bounds
+          if (ball.x - ball.radius < 0) {
+            score.player2++;
+            checkWinner();
+            resetGame();
+          } else if (ball.x + ball.radius > canvas.width) {
+            score.player1++;
+            checkWinner();
+            resetGame();
+          }
+        }
+      }
+
+      function checkWinner() {
+        if (score.player1 === scoreLimit || score.player2 === scoreLimit) {
+          isGameRunning = false;
+        }
+      }
+
+      function resetGame() {
+        ball.x = canvas.width / 2;
+        ball.y = canvas.height / 2;
+        leftPaddle.y = canvas.height / 2 - leftPaddle.height / 2;
+        rightPaddle.y = canvas.height / 2 - rightPaddle.height / 2;
+      }
+
+      function keyDownHandler(e) {
+        if (e.code === 'Space') {
+          if (score.player1 === scoreLimit || score.player2 === scoreLimit) {
+            // Reset the game if it's over
+            score.player1 = 0;
+            score.player2 = 0;
+          }
+          isGameRunning = true;
+        }
+      }
+
+      function keyUpHandler(e) {
+        if (isGameRunning) {
+          if (e.code === 'ArrowUp' && rightPaddle.y > 0) {
+            rightPaddle.speed = -rightPaddle.speed;
+          } else if (e.code === 'ArrowDown' && rightPaddle.y + rightPaddle.height < canvas.height) {
+            rightPaddle.speed = -rightPaddle.speed;
+          }
+        }
+      }
+
+      document.addEventListener('keydown', keyDownHandler, false);
+      document.addEventListener('keyup', keyUpHandler, false);
+
+      function gameLoop() {
+        draw();
+        update();
+        requestAnimationFrame(gameLoop);
+      }
+
+      gameLoop();
+    });
+  </script>
+</body>
+</html>
