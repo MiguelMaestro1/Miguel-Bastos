@@ -21,9 +21,8 @@
 
       // Initial game state
       let ball = { x: canvas.width / 2, y: canvas.height / 2, radius: 10, speedX: 5, speedY: 5 };
-      let paddle = { width: 10, height: 60, speed: 8, y: canvas.height / 2 - 30 };
-      let leftPaddle = { x: 0, y: canvas.height / 2 - 30, width: 10, height: 60, speed: 8 };
-      let rightPaddle = { x: canvas.width - 10, y: canvas.height / 2 - 30, width: 10, height: 60, speed: 8 };
+      let leftPaddle = { x: 0, y: canvas.height / 2 - 30, width: 10, height: 60, speed: 5 };
+      let rightPaddle = { x: canvas.width - 10, y: canvas.height / 2 - 30, width: 10, height: 60, speed: 5 }; // Adjusted the right paddle speed
       let score = { player1: 0, player2: 0 };
       let isGameRunning = false;
       let scoreLimit = 5; // Set the winning score limit
@@ -70,8 +69,12 @@
       function update() {
         if (isGameRunning && score.player1 < scoreLimit && score.player2 < scoreLimit) {
           // Move paddles
-          leftPaddle.y += leftPaddle.speed;
+          leftPaddle.y += (ball.y - (leftPaddle.y + leftPaddle.height / 2)) * 0.1;
           rightPaddle.y += rightPaddle.speed;
+
+          // Ensure paddles stay within the playing area
+          leftPaddle.y = Math.max(0, Math.min(leftPaddle.y, canvas.height - leftPaddle.height));
+          rightPaddle.y = Math.max(0, Math.min(rightPaddle.y, canvas.height - rightPaddle.height));
 
           // Ball movement
           ball.x += ball.speedX;
@@ -129,15 +132,19 @@
           }
           isGameRunning = true;
         }
+
+        // Player controls for the right paddle
+        if (e.code === 'KeyW' && rightPaddle.y > 0) {
+          rightPaddle.speed = -rightPaddle.speed;
+        } else if (e.code === 'KeyS' && rightPaddle.y + rightPaddle.height < canvas.height) {
+          rightPaddle.speed = -rightPaddle.speed;
+        }
       }
 
       function keyUpHandler(e) {
-        if (isGameRunning) {
-          if (e.code === 'ArrowUp' && rightPaddle.y > 0) {
-            rightPaddle.speed = -rightPaddle.speed;
-          } else if (e.code === 'ArrowDown' && rightPaddle.y + rightPaddle.height < canvas.height) {
-            rightPaddle.speed = -rightPaddle.speed;
-          }
+        // Player controls for the right paddle
+        if (e.code === 'KeyW' || e.code === 'KeyS') {
+          rightPaddle.speed = 5; // Adjust the speed as needed
         }
       }
 
